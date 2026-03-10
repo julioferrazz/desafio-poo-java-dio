@@ -7,14 +7,14 @@ public class Dev {
     private Set<Conteudo> conteudosInscritos = new LinkedHashSet<>();
     private Set<Conteudo> conteudosConcluidos = new LinkedHashSet<>();
 
-    public void inscreverBootcamp(Bootcamp bootcamp){
+    public void inscreverBootcamp(Bootcamp bootcamp) {
         this.conteudosInscritos.addAll(bootcamp.getConteudos());
         bootcamp.getDevsInscritos().add(this);
     }
 
     public void progredir() {
         Optional<Conteudo> conteudo = this.conteudosInscritos.stream().findFirst();
-        if(conteudo.isPresent()) {
+        if (conteudo.isPresent()) {
             this.conteudosConcluidos.add(conteudo.get());
             this.conteudosInscritos.remove(conteudo.get());
         } else {
@@ -25,7 +25,7 @@ public class Dev {
     public double calcularTotalXp() {
         Iterator<Conteudo> iterator = this.conteudosConcluidos.iterator();
         double soma = 0;
-        while(iterator.hasNext()){
+        while (iterator.hasNext()) {
             double next = iterator.next().calcularXp();
             soma += next;
         }
@@ -60,6 +60,32 @@ public class Dev {
 
     public void setConteudosConcluidos(Set<Conteudo> conteudosConcluidos) {
         this.conteudosConcluidos = conteudosConcluidos;
+    }
+
+    public String listarConteudos(Set<Conteudo> conteudos) {
+        StringBuilder sb = new StringBuilder();
+        for (Conteudo cont : conteudos) {
+            if (cont instanceof Curso && sb.indexOf("Cursos: {") == -1) {
+                sb.append("Cursos: {");
+            }
+            if (cont instanceof Mentoria) {
+                if (sb.indexOf("}, Mentoria: {") == -1 && sb.indexOf("Mentoria: {") == -1) {
+                    if (!sb.isEmpty()) {
+                        sb.delete(sb.length() - 2, sb.length());
+                        sb.append("}, Mentoria: {");
+                    } else{
+                        sb.append("Mentoria: {");
+                    }
+                } else {
+                    sb.append(", ");
+                }
+                sb.append(cont);
+                continue;
+            }
+            sb.append(cont).append(", ");
+        }
+        sb.append("}");
+        return sb.toString();
     }
 
     @Override
